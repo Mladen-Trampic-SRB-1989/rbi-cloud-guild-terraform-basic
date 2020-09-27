@@ -1,3 +1,6 @@
+# Image Slide
+![INTRO](resources/intro_slide.PNG)
+
 # Requirements
 - Hetzner Cloud account
 - AWS Account
