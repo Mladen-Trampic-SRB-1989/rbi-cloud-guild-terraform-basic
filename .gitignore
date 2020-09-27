@@ -1,0 +1,7 @@
+venv/
+utility/ssh_key
+utility/ssh_key.pub
+**/.terraform/
+**/.terraform_state/
+#**/.creds/
+**/plan_output/

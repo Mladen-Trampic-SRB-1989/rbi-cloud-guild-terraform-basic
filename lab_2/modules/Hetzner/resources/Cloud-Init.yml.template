@@ -1,0 +1,209 @@
+#cloud-config
+users:
+  - name: mtrampic
+    ssh-authorized_keys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXuHNrVxSkCTzfKqq5oZow4ZrwSSfd2UfjxE6hRdFv06R9cjjJPEpjct+ttbEybl+ELz1KvdGFBjqb5U8CsCKyBKoRb4DTP0z6tMUDP7tLKobcqXqLXVZF5ldXT5ENGccCscRuqPv0voZT6L7KCHltShwCp38xA+D5BdGCvKqAUSEL++h5LlJAJC9A7kRGZAn/imiEkART0ys3ByeurGltzfe2f5m4mNmtEEdDFY+BO88/qwLSaVzi8wp5tVM2F28sdZTb9fcpBpj2VX0TDRUNQTyDWSttQypDxSOe3U2Z097f5dxN9P/31tI6tFvQay1KQo2+z7N22bt1JqwYP4k1 mtram@DESKTOP-BG1IRED
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups:
+      - sudo
+      - docker
+    shell: /bin/bash
+write_files:
+  - path: /opt/api/Dockerfile
+    content: |
+      FROM python:3.8.1-slim-buster
+
+      ENV WORKDIR=/usr/src/app
+      ENV USER=app
+      ENV APP_HOME=/home/app/web
+      ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+
+      WORKDIR $WORKDIR
+
+      RUN pip install --upgrade pip
+      COPY ./requirements.txt $WORKDIR/requirements.txt
+      RUN pip install -r requirements.txt
+
+      RUN adduser --system --group $USER
+      RUN mkdir $APP_HOME
+      WORKDIR $APP_HOME
+
+      COPY . $APP_HOME
+      RUN chown -R $USER:$USER $APP_HOME
+      USER $USER
+  - path: /opt/api/main.py
+    content: |
+      from fastapi import FastAPI
+      from fastapi.responses import HTMLResponse
+      import requests
+      import json
+
+      app = FastAPI()
+
+      def generate_html_response():
+          headers = {"Content-Type": "application/json"}
+          hostname = requests.get('http://169.254.169.254/hetzner/v1/metadata/hostname', headers=headers).text
+          public_ipv4 = requests.get('http://169.254.169.254/hetzner/v1/metadata/public-ipv4', headers=headers).text
+      
+          data = {
+              'hostname'  : hostname,
+              'public_ipv4' : public_ipv4
+              }
+          js = json.dumps(data, indent = 4)
+            
+          htmlConstruct = f"""<html>
+      <!DOCTYPE html>
+      <html>
+      <title>CV Workflow</title>
+      <xmp theme="united" style="display:none;">
+            
+      ## Visual Workflow
+            
+      ```Bash
+      {js}
+      ```
+            
+      </xmp>
+      <script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+      </html>
+      """
+          return HTMLResponse(content=htmlConstruct, status_code=200)
+            
+      @app.get('/',response_class=HTMLResponse)
+      async def api_hello():
+       return generate_html_response()
+  - path: /opt/api/requirements.txt
+    content: |
+      fastapi==0.57.0
+      gunicorn==20.0.4
+      uvicorn==0.11.5
+      requests
+  - path: /etc/ssh/sshd_config
+    content: |
+      Protocol 2
+      Port 1989
+      HostKey /etc/ssh/ssh_host_rsa_key
+      HostKey /etc/ssh/ssh_host_ecdsa_key
+      HostKey /etc/ssh/ssh_host_ed25519_key
+      UsePrivilegeSeparation yes
+      KeyRegenerationInterval 3600
+      SyslogFacility AUTH
+      LogLevel INFO
+      PermitRootLogin no
+      StrictModes yes
+      IgnoreRhosts yes
+      RhostsRSAAuthentication no
+      HostbasedAuthentication no
+      PubkeyAuthentication yes
+      PasswordAuthentication no
+      ChallengeResponseAuthentication no
+      UsePAM yes
+      X11Forwarding no
+      PrintMotd no
+      AcceptEnv LANG LC_*
+      Subsystem	sftp	/usr/lib/openssh/sftp-server
+      AllowUsers mtrampic
+  - path: /opt/traefik/traefik.toml
+    content: |
+      debug = true
+      logLevel = "ERROR"
+      defaultEntryPoints = ["https","http"]
+          
+      [entryPoints]
+        [entryPoints.http]
+        address = ":80"
+          [entryPoints.http.redirect]
+          entryPoint = "https"
+        [entryPoints.https]
+        address = ":443"
+        [entryPoints.https.tls]
+      
+      [retry]
+      
+      [docker]
+      endpoint = "unix:///var/run/docker.sock"
+      domain = "${name}.trampic.info"
+      watch = true
+      exposedByDefault = false
+      
+      [acme]
+      email = "mtrampic@hotmail.com"
+      storage = "acme.json"
+      entryPoint = "https"
+      onHostRule = true
+      [acme.httpChallenge]
+      entryPoint = "http"
+  - path: /opt/traefik/acme.json
+    permissions: "0600"
+    content: |
+      {}
+  - path: /opt/traefik/docker-compose.yml
+    content: |
+      version: '2'
+
+      services:
+        traefik:
+          image: traefik:1.7
+          restart: always
+          ports:
+            - 80:80
+            - 443:443
+          networks:
+            - web
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /opt/traefik/traefik.toml:/traefik.toml
+            - /opt/traefik/acme.json:/acme.json
+            - /opt/traefik/access.log:/tmp/access.log
+          container_name: traefik
+          
+      networks:
+        web:
+          external: true
+  - path: /opt/app/docker-compose.yml
+    content: |
+      version: "2.1"
+          
+      services:
+        app:
+          build:
+            context: /opt/api
+          command: gunicorn main:app --bind 0.0.0.0:5000 -w 4 -k uvicorn.workers.UvicornWorker
+          restart: always
+          networks:
+            - web
+          expose:
+            - "5000"
+          labels:
+            - "traefik.docker.network=web"
+            - "traefik.enable=true"
+            - "traefik.app.frontend.rule=Host:${name}.trampic.info"
+            - "traefik.app.protocol=http"
+          
+      networks:
+        web:
+          external: true
+package_upgrade: true
+packages:
+  - ufw
+  - vim
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+runcmd:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -  
+  - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose
+  - ufw default deny incoming
+  - ufw allow 1989/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - echo "y" | ufw enable
+  - ufw reload
+  - docker network create web
+  - docker-compose -f /opt/traefik/docker-compose.yml up -d
+  - docker-compose -f /opt/app/docker-compose.yml up -d
+
