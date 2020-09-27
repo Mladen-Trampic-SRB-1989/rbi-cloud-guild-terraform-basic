@@ -1,7 +1,7 @@
 # Requirements
-- Public hosted zone
 - Hetzner Cloud account
 - AWS Account
+    - Public hosted zone / registered domain 
 - Windows 10 with Docker / WSL 2
 - Ubuntu WSL 
 
