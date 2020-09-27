@@ -57,9 +57,6 @@ Here we have actually terraform file blocking_rule.tf which is creating IAM role
 ```bash
 . lab_3/imagine_ci_cd.sh
 ```
-get=aws_autoscaling_group.my_asg -auto-approve
-```
-
 To Destroy ( cleanup ):
 
 ```bash
@@ -69,6 +66,9 @@ docker run --rm -it -v ${PWD}/.creds:/terraform/.creds -v ${PWD}/lab_3:/terrafor
 
 # Resource
 [draw.io lab_3_step_1](resources/lab_3_step_1.drawio)
+
 [draw.io lab_3_step_2](resources/lab_3_step_2.drawio)
+
 [draw.io lab_3_step_3](resources/lab_3_step_3.drawio)
+
 [draw.io lab_3_step_4](resources/lab_3_step_4.drawio)
