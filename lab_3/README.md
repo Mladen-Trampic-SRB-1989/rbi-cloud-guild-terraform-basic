@@ -43,11 +43,7 @@ Here we have actually terraform file blocking_rule.tf which is creating IAM role
 ```bash
 . lab_3/imagine_ci_cd.sh
 ```
-
-Limited Destroy 
-
-```bash
-docker run --rm -it -v ${PWD}/.creds:/terraform/.creds -v ${PWD}/lab_3:/terraform -w=/terraform --user "$(id -u):$(id -g)" hashicorp/terraform:0.12.28 destroy -var-file /terraform/root_module.tfvars.json -target=aws_autoscaling_group.my_asg -auto-approve
+get=aws_autoscaling_group.my_asg -auto-approve
 ```
 
 To Destroy ( cleanup ):
@@ -55,3 +51,19 @@ To Destroy ( cleanup ):
 ```bash
 docker run --rm -it -v ${PWD}/.creds:/terraform/.creds -v ${PWD}/lab_3:/terraform -w=/terraform --user "$(id -u):$(id -g)" hashicorp/terraform:0.12.28 destroy -var-file /terraform/root_module.tfvars.json 
 ```
+
+# Image Slide
+## Step 1
+![Reality](resources/lab_3_step_1.PNG)
+## Step 2
+![Reality](resources/lab_3_step_2.PNG)
+## Step 3
+![Reality](resources/lab_3_step_3.PNG)
+## Step 4
+![Reality](resources/lab_3_step_4.PNG)
+
+# Resource
+[draw.io lab_3_step_1](resources/lab_3_step_1.drawio)
+[draw.io lab_3_step_2](resources/lab_3_step_2.drawio)
+[draw.io lab_3_step_3](resources/lab_3_step_3.drawio)
+[draw.io lab_3_step_4](resources/lab_3_step_4.drawio)

@@ -13,3 +13,9 @@ To Destroy ( cleanup ):
 ```bash
 docker run --rm -it -v ${PWD}/.creds:/terraform/.creds -v ${PWD}/lab_1:/terraform -w=/terraform --user "$(id -u):$(id -g)" hashicorp/terraform:0.12.28 destroy -var-file /terraform/root_module.tfvars.json
 ```
+
+# Image Slide
+![Reality](resources/lab_1.PNG)
+
+# Resource
+[draw.io ](resources/lab_1_final.drawio)
