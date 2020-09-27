@@ -4,6 +4,7 @@ locals {
 
 resource "aws_iam_role" "some_mailintent_role" {
   name               = "some_mailintent_role"
+  #name               = "compliant_role"
   assume_role_policy = data.aws_iam_policy_document.some_mailintent_role.json
 }
 
@@ -23,6 +24,6 @@ data "aws_iam_policy_document" "some_mailintent_role" {
 
 resource "aws_iam_role_policy_attachment" "some_mailintent_role" {
   role       = aws_iam_role.some_mailintent_role.id
-  #policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-  policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  #policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
 }
