@@ -1,3 +1,14 @@
+# Image Slide
+## Step 1
+![Reality](resources/lab_3_step_1.PNG)
+## Step 2
+![Reality](resources/lab_3_step_2.PNG)
+## Step 3
+![Reality](resources/lab_3_step_3.PNG)
+## Step 4
+![Reality](resources/lab_3_step_4.PNG)
+
+# Commands
 Step 0 copy output of previous lab_1 root_module_state_tfvars_json into file root_module_state.tfvars.json
 
 Make sure you are in root of project ${SOME_PATH...}/terraform_workshop/
@@ -52,15 +63,6 @@ To Destroy ( cleanup ):
 docker run --rm -it -v ${PWD}/.creds:/terraform/.creds -v ${PWD}/lab_3:/terraform -w=/terraform --user "$(id -u):$(id -g)" hashicorp/terraform:0.12.28 destroy -var-file /terraform/root_module.tfvars.json 
 ```
 
-# Image Slide
-## Step 1
-![Reality](resources/lab_3_step_1.PNG)
-## Step 2
-![Reality](resources/lab_3_step_2.PNG)
-## Step 3
-![Reality](resources/lab_3_step_3.PNG)
-## Step 4
-![Reality](resources/lab_3_step_4.PNG)
 
 # Resource
 [draw.io lab_3_step_1](resources/lab_3_step_1.drawio)
