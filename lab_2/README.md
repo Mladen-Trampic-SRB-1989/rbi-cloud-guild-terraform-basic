@@ -1,5 +1,5 @@
 # Image Slide
-![Reality](resources/lab_2.PNG)
+![L2FINAL](resources/lab_2.PNG)
 
 # Commands 
 Step 0 copy output of previous lab_1 root_module_state_tfvars_json into file root_module_state.tfvars.json

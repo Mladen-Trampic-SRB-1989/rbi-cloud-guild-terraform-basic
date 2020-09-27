@@ -1,12 +1,15 @@
 # Image Slide
 ## Step 1
-![Reality](resources/lab_3_step_1.PNG)
+![L3S1](resources/lab_3_step_1.PNG)
 ## Step 2
-![Reality](resources/lab_3_step_2.PNG)
+![L3S2](resources/lab_3_step_2.PNG)
 ## Step 3
-![Reality](resources/lab_3_step_3.PNG)
+![L3S3](resources/lab_3_step_3.PNG)
 ## Step 4
-![Reality](resources/lab_3_step_4.PNG)
+![L3S4](resources/lab_3_step_4.PNG)
+
+# Bonus Hint
+![L3BONUS](resources/simulate_ci_cd_pipeline.PNG)
 
 # Commands
 Step 0 copy output of previous lab_1 root_module_state_tfvars_json into file root_module_state.tfvars.json

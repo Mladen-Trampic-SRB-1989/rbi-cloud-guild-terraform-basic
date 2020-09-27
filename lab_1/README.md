@@ -1,5 +1,5 @@
 # Image Slide
-![Reality](resources/lab_1.PNG)
+![L1FINAL](resources/lab_1.PNG)
 
 # Commands
 Step 1 initialize, to download provider
